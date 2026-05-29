@@ -1,60 +1,186 @@
 {
     "22": {
         "0": {
-            "Mo": false,
-            "Di": false,
-            "Mi": false,
-            "Do": false,
-            "Fr": false,
-            "Sa": false,
-            "So": false
+            "Mo": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Di": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Mi": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Do": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Fr": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Sa": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "So": {
+                "erledigt": false,
+                "helfer": null
+            }
         },
         "1": {
-            "Mo": false,
-            "Di": false,
-            "Mi": false,
-            "Do": false,
-            "Fr": false,
-            "Sa": false,
-            "So": false
+            "Mo": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Di": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Mi": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Do": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Fr": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Sa": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "So": {
+                "erledigt": false,
+                "helfer": null
+            }
         },
         "2": {
-            "Mo": false,
-            "Di": false,
-            "Mi": false,
-            "Do": false,
-            "Fr": false,
-            "Sa": false,
-            "So": false
+            "Mo": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Di": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Mi": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Do": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Fr": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Sa": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "So": {
+                "erledigt": false,
+                "helfer": null
+            }
         }
     },
     "21": {
         "0": {
-            "Mo": false,
-            "Di": false,
-            "Mi": false,
-            "Do": false,
-            "Fr": false,
-            "Sa": false,
-            "So": false
+            "Mo": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Di": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Mi": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Do": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Fr": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Sa": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "So": {
+                "erledigt": false,
+                "helfer": null
+            }
         },
         "1": {
-            "Mo": false,
-            "Di": false,
-            "Mi": false,
-            "Do": false,
-            "Fr": false,
-            "Sa": false,
-            "So": false
+            "Mo": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Di": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Mi": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Do": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Fr": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Sa": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "So": {
+                "erledigt": false,
+                "helfer": null
+            }
         },
         "2": {
-            "Mo": false,
-            "Di": false,
-            "Mi": false,
-            "Do": false,
-            "Fr": false,
-            "Sa": false,
-            "So": false
+            "Mo": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Di": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Mi": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Do": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Fr": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "Sa": {
+                "erledigt": false,
+                "helfer": null
+            },
+            "So": {
+                "erledigt": false,
+                "helfer": null
+            }
         }
     }
 }
