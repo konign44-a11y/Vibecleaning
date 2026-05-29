@@ -1,53 +1,69 @@
 import streamlit as st
 import datetime
 
-# 1. Seiteneinstellungen für mobile Geräte optimieren
 st.set_page_config(page_title="VibeCleaning", page_icon="🧹", layout="centered")
 
-# Schickes CSS für größere Buttons auf dem Handy
-st.markdown("""
-    <style>
-    div.stButton > button:first-child {
-        width: 100%;
-        height: 60px;
-        font-size: 18px;
-    }
-    </style>
-""", unsafe_allow_html=True)
+wochentage = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
 
-st.title("🧹 VibeCleaning — Eure WG-App")
-st.write("Wer ist diese Woche mit was dran?")
+if "tracking_data" not in st.session_state:
+    st.session_state.tracking_data = {}
 
-# 2. Festes WG-Setup (Hier einfach eure Namen und Aufgaben anpassen!)
-wg_crew = ["Anna", "Ben", "Chris", "Daria"]
-aufgaben = ["Bad putzen 🧼", "Küche & Böden 🍳", "Müll & Altglas 🗑️", "Einkaufen & Orga 🛒"]
+wg_crew = ["Nico", "Kiki", "Bruno"]
+aufgaben = ["Bad putzen 🧼", "Küche & Böden 🍳", "Müll & Altglas 🗑️"]
 
-# 3. Die Rotations-Logik basierend auf der aktuellen Kalenderwoche (KW)
-aktuell_kw = datetime.datetime.now().isocalendar()[1]
 anzahl_mitglieder = len(wg_crew)
+aktuell_kw = datetime.datetime.now().isocalendar()[1]
+letzte_kw = aktuell_kw - 1
 
-st.info(#cite: 14
-    f"📅 **Aktuelle Kalenderwoche:** {aktuell_kw}"
-)
+for kw in [aktuell_kw, letzte_kw]:
+    if kw not in st.session_state.tracking_data:
+        st.session_state.tracking_data[kw] = {
+            i: {tag: False for tag in wochentage} for i in range(len(aufgaben))
+        }
 
-st.subheader("📌 Aufgabenverteilung für diese Woche:")
+st.title("🧹 VibeCleaning")
 
-# Berechnung, wer was macht (Verschiebung jede Woche um 1)
-for i, aufgabe in enumerate(aufgaben):
-    # Der Index des Bewohners rotiert jede Woche weiter
-    bewohner_index = (i + aktuell_kw) % anzahl_mitglieder
-    zustandiger = wg_crew[bewohner_index]
-    
-    # Schicke Boxen für die Aufgaben im mobilen Layout
-    with st.container():
-        col1, col2 = st.columns([2, 1])
-        with col1:
+st.sidebar.header("👤 Profil")
+aktiver_nutzer = st.sidebar.selectbox("Wer nutzt die App gerade?", wg_crew)
+st.sidebar.write(f"Hallo **{aktiver_nutzer}**! Viel Spaß beim Putzen. 🙌")
+
+st.info(f"📅 **Aktuelle Kalenderwoche:** {aktuell_kw}")
+
+tab1, tab2 = st.tabs(["📌 Aktuelle Woche", "📜 Historie (Letzte Woche)"])
+
+with tab1:
+    st.subheader("Deine Aufgaben für diese Woche:")
+    for i, aufgabe in enumerate(aufgaben):
+        bewohner_index = (i + aktuell_kw) % anzahl_mitglieder
+        zustandiger = wg_crew[bewohner_index]
+        
+        with st.container():
             st.markdown(f"### {aufgabe}")
-            st.markdown(f"👤 **Verantwortlich:** {zustandiger}")
-        with col2:
-            # Ein simpler Haken-Button für das Handy
-            if st.button("Erledigt! ✅", key=f"btn_{i}"):
-                st.success(f"Danke, {zustandiger}! 🎉")
-        st.markdown("---")
+            st.markdown(f"👤 **Zuständig:** `{zustandiger}`")
+            
+            cols = st.columns(7)
+            for j, tag in enumerate(wochentage):
+                with cols[j]:
+                    ist_erledigt = st.session_state.tracking_data[aktuell_kw][i][tag]
+                    button_label = f"✅ {tag}" if ist_erledigt else tag
+                    if st.button(button_label, key=f"btn_akt_{i}_{tag}", use_container_width=True):
+                        st.session_state.tracking_data[aktuell_kw][i][tag] = not ist_erledigt
+                        st.rerun()
+            st.markdown("---")
 
-st.caption("💡 Die Aufgaben rotieren jeden Montag automatisch eine Person weiter.")
+with tab2:
+    st.subheader(f"Ergebnisse aus der Vorwoche (KW {letzte_kw})")
+    with st.expander("📊 Detailübersicht öffnen", expanded=True):
+        for i, aufgabe in enumerate(aufgaben):
+            bewohner_index_letzte = (i + letzte_kw) % anzahl_mitglieder
+            zustandiger_letzte = wg_crew[bewohner_index_letzte]
+            
+            st.markdown(f"**{aufgabe}** (Verantwortlich: *{zustandiger_letzte}*)")
+            erledigte_tage = []
+            for tag in wochentage:
+                if st.session_state.tracking_data[letzte_kw][i][tag]:
+                    erledigte_tage.append(f"🟢 {tag}")
+                else:
+                    erledigte_tage.append(f"⚪ {tag}")
+            st.write(" ".join(erledigte_tage))
+            st.markdown("")
