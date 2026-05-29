@@ -11,7 +11,7 @@ wochentage = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
 
 # 2. Festgelegtes WG-Setup und Punkteverteilung
 wg_crew = ["Nico", "Kiki", "Bruno"]
-# Wir nutzen ein Dictionary, um jeder Aufgabe feste Punkte zuzuweisen
+# Hier ist festgelegt, wie viele Punkte es pro Tag für die jeweilige Aufgabe gibt
 aufgaben_mit_punkten = {
     "Bad putzen 🧼": 5,
     "Küche & Böden 🍳": 3,
@@ -25,6 +25,7 @@ def load_data():
         try:
             with open(DB_FILE, "r") as f:
                 raw_data = json.load(f)
+                # JSON speichert Keys immer als Text, wir wandeln die KW-Keys wieder in Integers um
                 return {int(k): v for k, v in raw_data.items()}
         except Exception:
             return {}
@@ -34,6 +35,7 @@ def save_data(data):
     with open(DB_FILE, "w") as f:
         json.dump(data, f, indent=4)
 
+# Daten beim Start der App einmalig aus der Datei laden
 if "tracking_data" not in st.session_state:
     st.session_state.tracking_data = load_data()
 
@@ -42,7 +44,7 @@ aktuell_kw = datetime.datetime.now().isocalendar()[1]
 letzte_kw = aktuell_kw - 1
 heute_wochentag_index = datetime.datetime.now().weekday() # 0 = Mo, 4 = Fr, 6 = So
 
-# Sicherstellen, dass Strukturen für aktuelle und letzte Woche existieren
+# Sicherstellen, dass Strukturen für die aktuelle und letzte Woche existieren
 for kw in [aktuell_kw, letzte_kw]:
     if kw not in st.session_state.tracking_data:
         st.session_state.tracking_data[kw] = {}
@@ -51,6 +53,7 @@ for kw in [aktuell_kw, letzte_kw]:
         if aufgabe_key not in st.session_state.tracking_data[kw]:
             st.session_state.tracking_data[kw][aufgabe_key] = {tag: False for tag in wochentage}
 
+# Einmalig speichern, um die Struktur auf der Festplatte zu sichern
 save_data(st.session_state.tracking_data)
 
 # --- SCOREBERECHNUNG ---
@@ -80,9 +83,9 @@ aktiver_nutzer = st.sidebar.selectbox("Wer nutzt die App gerade?", wg_crew)
 st.sidebar.write(f"Hallo **{aktiver_nutzer}**! Bring die Rangliste zum Beben! 🔥")
 
 st.sidebar.markdown("---")
-st.sidebar.header("📊 Live-Rangliste (KW " + str(aktuell_kw) + ")")
+st.sidebar.header(f"📊 Live-Rangliste (KW {aktuell_kw})")
 
-# Sortiere die Mitbewohner nach Punkten absteigend
+# Sortiere die Mitbewohner nach Punkten absteigend für das Leaderboard
 ranking = sorted(punkte_stand.items(), key=lambda x: x[1], reverse=True)
 for platz, (name, punkte) in enumerate(ranking, 1):
     medaille = "🥇" if platz == 1 else "🥈" if platz == 2 else "🥉"
@@ -90,12 +93,12 @@ for platz, (name, punkte) in enumerate(ranking, 1):
 
 st.sidebar.markdown("---")
 
-# GAMIFICATION FEATURE 2: WALL OF FAME & SHAME (Aktiv ab Freitag)
+# WALL OF FAME & SHAME
 st.sidebar.header("📢 WG-Anpranger")
 fame_name, fame_punkte = ranking[0]
 shame_kandidaten = [name for name, haken in wer_hat_was_erledigt.items() if haken == 0]
 
-# Wall of Fame
+# Wall of Fame anzeigen
 if fame_punkte > 0:
     st.sidebar.success(f"👑 **Wall of Fame:**\n{fame_name} fleht um Konkurrenz ({fame_punkte} Punkte)!")
 
@@ -114,18 +117,27 @@ else:
 st.info(f"📅 **Kalenderwoche:** {aktuell_kw}")
 tab1, tab2 = st.tabs(["📌 Aktuelle Woche", "📜 Historie (Letzte Woche)"])
 
-# TAB 1: AKTUELLE WOCHE
+# ----------------------------------------------------
+# TAB 1: AKTUELLE WOCHE (Mit Klicksperre für Fremde)
+# ----------------------------------------------------
 with tab1:
     st.subheader("Erledige deine Aufgaben und sammle Punkte:")
     
     for i, aufgabe in enumerate(aufgaben):
+        # Rotationslogik für die aktuelle Woche
         bewohner_index = (i + aktuell_kw) % anzahl_mitglieder
         zustandiger = wg_crew[bewohner_index]
         aufgabe_key = str(i)
         punkte_wert = aufgaben_mit_punkten[aufgabe]
         
+        # --- SCHUTZ-CHECK ---
+        # Wenn der in der Sidebar ausgewählte Nutzer NICHT der Zuständige ist, wird der Button gesperrt
+        ist_gesperrt = (aktiver_nutzer != zustandiger)
+        
         with st.container():
-            st.markdown(f"### {aufgabe} `+{punkte_wert} Pkt./Tag`")
+            # Visueller Hinweis, falls man die Aufgabe eines anderen anschaut
+            hinweis = "" if not ist_gesperrt else " 🔒 (Nur lesbar)"
+            st.markdown(f"### {aufgabe} `+{punkte_wert} Pkt./Tag`{hinweis}")
             st.markdown(f"👤 **Zuständig:** `{zustandiger}`")
             
             cols = st.columns(7)
@@ -134,18 +146,23 @@ with tab1:
                     ist_erledigt = st.session_state.tracking_data[aktuell_kw][aufgabe_key][tag]
                     button_label = f"✅ {tag}" if ist_erledigt else tag
                     
-                    if st.button(button_label, key=f"btn_akt_{i}_{tag}", use_container_width=True):
+                    # Über das Argument 'disabled' sperren wir den Button für Fremde
+                    if st.button(button_label, key=f"btn_akt_{i}_{tag}", use_container_width=True, disabled=ist_gesperrt):
                         st.session_state.tracking_data[aktuell_kw][aufgabe_key][tag] = not ist_erledigt
+                        # Direkt in der JSON-Datei sichern
                         save_data(st.session_state.tracking_data)
                         st.rerun()
             st.markdown("---")
 
-# TAB 2: HISTORIE
+# ----------------------------------------------------
+# TAB 2: HISTORIE (Letzte Woche anzeigen)
+# ----------------------------------------------------
 with tab2:
     st.subheader(f"Ergebnisse aus der Vorwoche (KW {letzte_kw})")
     
     with st.expander("📊 Detailübersicht öffnen", expanded=True):
         for i, aufgabe in enumerate(aufgaben):
+            # Rotationslogik für die LETZTE Woche berechnen
             bewohner_index_letzte = (i + letzte_kw) % anzahl_mitglieder
             zustandiger_letzte = wg_crew[bewohner_index_letzte]
             aufgabe_key = str(i)
