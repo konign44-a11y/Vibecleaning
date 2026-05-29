@@ -1,0 +1,60 @@
+{
+    "22": {
+        "0": {
+            "Mo": false,
+            "Di": false,
+            "Mi": false,
+            "Do": false,
+            "Fr": false,
+            "Sa": false,
+            "So": false
+        },
+        "1": {
+            "Mo": false,
+            "Di": false,
+            "Mi": false,
+            "Do": false,
+            "Fr": false,
+            "Sa": false,
+            "So": false
+        },
+        "2": {
+            "Mo": false,
+            "Di": false,
+            "Mi": false,
+            "Do": false,
+            "Fr": false,
+            "Sa": false,
+            "So": false
+        }
+    },
+    "21": {
+        "0": {
+            "Mo": false,
+            "Di": false,
+            "Mi": false,
+            "Do": false,
+            "Fr": false,
+            "Sa": false,
+            "So": false
+        },
+        "1": {
+            "Mo": false,
+            "Di": false,
+            "Mi": false,
+            "Do": false,
+            "Fr": false,
+            "Sa": false,
+            "So": false
+        },
+        "2": {
+            "Mo": false,
+            "Di": false,
+            "Mi": false,
+            "Do": false,
+            "Fr": false,
+            "Sa": false,
+            "So": false
+        }
+    }
+}
